@@ -4,6 +4,8 @@ library(DT)
 library(tidyverse)
 library(dbplyr)
 library(ComplexHeatmap)
+library(RColorBrewer)
+
 
 source('blast.R')
 source('plot_genes.R')

@@ -21,13 +21,61 @@ plot_genes <- function(fd,input){
         summarise(vst=mean(vst,na.rm = TRUE)) %>% 
         ungroup() %>% 
         ggplot(aes(x=reorder(time_label,time),y=vst)) + 
-        geom_point() + 
+        geom_point(size = 2.5) + 
+        # Add dashed line as indicator for settlement induction
+        geom_vline(xintercept="133hpf", colour ="grey44",linetype = "dashed")+
+        # Add axis labels
+        xlab("Developmental stages") +
+        ylab("Normalised gene expression \n (Variance stabilising transformations)")+
         geom_line(aes(group=gene)) +
-        theme(axis.text.x = element_text(angle=90)) + xlab("Stage") +
+        theme(
+          axis.text.x = element_text(angle=70,vjust = 0.5, hjust=0.5),
+          panel.background = element_rect(fill = "white",
+                                          colour = "grey88",
+                                          size = 0.5, linetype = "solid"),
+          panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                          colour = "grey88"), 
+          panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                          colour = "grey88"),
+          panel.border = element_rect(color = "black", fill = NA),
+          #Font sizes
+          axis.title.x = element_text(size = 20),
+          axis.title.y = element_text(size = 20),
+          axis.text = element_text(size = 15),
+          strip.text.x = element_text(size = 15)
+        
+        ) +  
         facet_wrap(~gene)        
     } else {
-      p <- ggplot(fd,aes(x=reorder(time_label,time),y=vst)) + geom_point(aes(color=cross)) + 
-        theme(axis.text.x = element_text(angle=90)) + xlab("Stage") +
+      p <- ggplot(fd,aes(x=reorder(time_label,time),y=vst)) + 
+        geom_point(aes(color=cross, shape=cross),size = 2.5) + 
+        geom_vline(xintercept="133hpf", colour ="grey44",linetype = "dashed")+
+        theme(
+          axis.text.x = element_text(angle=70,vjust = 0.5, hjust=0.5),
+          panel.background = element_rect(fill = "white",
+                                          colour = "grey88",
+                                          size = 0.5, linetype = "solid"),
+          panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                          colour = "grey88"), 
+          panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                          colour = "grey88"),
+          panel.border = element_rect(color = "black", fill = NA),
+          
+          #Font sizes
+          axis.title.x = element_text(size = 20),
+          axis.title.y = element_text(size = 20),
+          axis.text = element_text(size = 15),
+          strip.text.x = element_text(size = 15),
+          legend.title=element_text(size=15), 
+          legend.text=element_text(size=15)
+          
+        ) +  
+        # Add axis labels
+        xlab("Developmental stages") +
+        ylab("Normalised gene expression \n (Variance stabilising transformations)")+
+        # Manually change colours
+        scale_color_manual(values = c("B"="red3", "A"="green4"), name="Cross")+ 
+        scale_shape_manual(values = c(16,17),name="Cross")+
         facet_wrap(~gene)
     }
     
@@ -67,7 +115,10 @@ plot_genes <- function(fd,input){
     }
     
     
-    p <- Heatmap(hm_centered[,column_order],cluster_columns = FALSE)
+    p <- Heatmap(hm_centered[,column_order],
+                 cluster_columns = FALSE, 
+                 col=rev(brewer.pal(n = 11, name = "RdBu"))
+                 )
   }
   p
 }

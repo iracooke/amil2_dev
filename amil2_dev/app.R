@@ -63,7 +63,14 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
       checkboxInput("use_average", "Average replicates ", FALSE),
 
       plotOutput("genesPlot",height = "600px"),
+      
+      
+      
       DT::dataTableOutput('genetable')
+      
+    
+      
+      
     )
  )
 
