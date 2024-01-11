@@ -1,2 +1,27 @@
-# amil2_dev
-Acropora millepora developmental transcriptome visualisation
+# Acropora millepora developmental transcriptome visualisation
+
+## To update the deployed app
+
+First login to the dockerserver
+
+```bash
+ssh ubuntu@amil2dev.mmb.group
+```
+
+Update the code via git
+
+```bash
+cd dockerserver/apps/amil2_dev
+git pull
+```
+
+Build and start docker containers
+
+```bash
+cd ~/
+sudo docker-compose build
+sudo docker-compose up
+# Once up you can cancel and then run start to have it run in daemon mode
+sudo docker-compose start
+```
+
