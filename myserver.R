@@ -18,20 +18,6 @@ onStop(function() {
 cat(file=stderr(),"Done opening db connection")
 
 server <- function(input, output) {
-
-  table_genes <- function(fd){
-    gene_ids <- fd$gene %>% unique()
-
-    tbg <- annotations() %>% 
-      filter(gene %in% gene_ids) %>% 
-      select(gene,protein_name=protein,
-             uniprot_id,
-             genename) %>% 
-      distinct() %>% 
-      as.data.frame()
-
-    tbg
-  }
   
   parse_csv_input <- function(raw_text){
     str_trim(str_split(raw_text,",",simplify = TRUE))
@@ -45,17 +31,32 @@ server <- function(input, output) {
     dbconn %>% tbl("uniprot_goterms")
   })
   
-  filtered_genes <- eventReactive(input$go_anno,{
+  pfam_accessions <- reactive({
+    dbconn %>% tbl("pfam_accessions")
+  })
+  
+  filtered_genes <- eventReactive(input$search_anno,{
 
     cat(file=stderr(),"Searching for genes based on annotations\n")
+    
+    # Gene ids provided directly
     gene_list <- parse_csv_input(input$gene_list_text)
     
+    # Gene ids corresponding to listed GO terms
     go_list <- parse_csv_input(input$go_list_text)
     if(length(go_list)>0){
       go_gene_list <- uniprot_goterms() %>% 
         filter(go %in% go_list) %>% 
         pull(gene)
       gene_list <- c(gene_list,go_gene_list)
+    }
+    
+    pfam_list <- parse_csv_input(input$domain_list_text)
+    if(length(pfam_list)>0){
+      pfam_gene_list <- pfam_accessions() %>% 
+        filter(pfam_acc %in% pfam_list) %>% 
+        pull(gene)
+      gene_list <- c(gene_list,pfam_gene_list)
     }
     
     anno <- annotations()
@@ -74,7 +75,7 @@ server <- function(input, output) {
 
   })
   
-  blast_genes <- eventReactive(input$go_blast,{
+  blast_genes <- eventReactive(input$search_blast,{
     progress <- shiny::Progress$new()
     on.exit(progress$close())
     
@@ -89,7 +90,7 @@ server <- function(input, output) {
 
       progress$set(message = paste("Loading gene count data ..."),value=0.5)      
       
-      if ( input$go_blast == 0 ){
+      if ( input$search_blast == 0 ){
         fg <- filtered_genes()
       } else {
         fg <- blast_genes()
@@ -129,7 +130,21 @@ server <- function(input, output) {
 
   })
   
-     
+  
+  table_genes <- function(fd){
+    gene_ids <- fd$gene %>% base::unique()
+    
+    tbg <- annotations() %>% 
+      filter(gene %in% gene_ids) %>% 
+      select(gene,protein_name=protein,
+             uniprot_id,
+             genename) %>% 
+      distinct() %>% 
+      as.data.frame()
+    
+    tbg
+  }
+  
    output$genesPlot <- renderPlot({
      fd <- filtered_data()
      rs <- input$genetable_rows_selected

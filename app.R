@@ -17,7 +17,7 @@ ui <- fluidPage(
     titlePanel("Acropora millepora Development RNASeq. Version 2"),
 
     conditionalPanel(
-      condition = ("(input.go_anno == 0) & (input.go_blast == 0)"),
+      condition = ("(input.search_anno == 0) & (input.search_blast == 0)"),
       h3("Search for Genes based on their functional annotations"),
       wellPanel(
         p("Define genes using the following criteria. Note that criteria are additive so adding more criteria will produce a longer gene list"),
@@ -29,7 +29,7 @@ ui <- fluidPage(
         textInput("go_list_text", "GO Terms. A list of GO ids", value = NULL, width = '100%', placeholder = "eg. GO:0006355"),
 
         textInput("name_list_text", "Text to search in the protein name", value = NULL, width = '100%', placeholder = "eg. Peroxidasin"),
-        actionButton("go_anno", "Find Genes")
+        actionButton("search_anno", "Find Genes")
       ),
       h3("Or Search for homologs using blast"),
       wellPanel(
@@ -49,12 +49,12 @@ GSAVGFTFGCILTQQFRNLRRGDRFWYERNDQRVGFTLPQLTQIRKVTMARVLCDNVDGY
 RISQLSAFVVPSTRNIFRRCSGIPAMDFSPFKSFLGDESNAVEDAAVVEADSALTNDKPE
 MEPILNEPEVALTPDETEAALFDDAVDYLST
 PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single protein or nucleotide sequence to use as your query"),
-        actionButton("go_blast", "Find Genes with BLAST")
+        actionButton("search_blast", "Find Genes with BLAST")
       )
     ),
 
     conditionalPanel(
-      condition = ("(input.go_anno != 0) | (input.go_blast != 0)"),
+      condition = ("(input.search_anno != 0) | (input.search_blast != 0)"),
 
       h3("Options"),
 
