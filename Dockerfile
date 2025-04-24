@@ -1,4 +1,5 @@
-FROM rocker/shiny-verse
+FROM rocker/shiny-verse:4.4
+
 
 MAINTAINER Ira Cooke "ira.cooke@jcu.edu.au"
 
