@@ -60,16 +60,20 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
 
       numericInput("min_count", "Minimum read count for displayed genes", 10, min = 0, max = Inf),
       numericInput("num_hm_genes", "Number of genes required to display heatmap", 10, min = 1, max = 100),
-      checkboxInput("use_average", "Average replicates ", FALSE),
+      checkboxInput("use_average", "Average replicates ", TRUE),
 
-      plotOutput("genesPlot",height = "600px"),
+      plotOutput("genesPlot",
+                 height = "600px", 
+                 brush = brushOpts(id = "heatmap_brush", 
+                                   fill="auto", 
+                                   delayType = "debounce", 
+                                   delay = 600, resetOnNew = TRUE)),
       
+      h5(textOutput("gene_selection_summary")),
       
+      actionButton("reset_selection","Undo selections and show all matching genes"),
       
-      DT::dataTableOutput('genetable')
-      
-    
-      
+      DT::DTOutput('genetable')
       
     )
  )

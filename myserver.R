@@ -4,6 +4,7 @@ library(DT)
 library(tidyverse)
 library(dbplyr)
 library(ComplexHeatmap)
+library(InteractiveComplexHeatmap)
 library(RColorBrewer)
 
 
@@ -17,7 +18,7 @@ onStop(function() {
 })
 cat(file=stderr(),"Done opening db connection")
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   parse_csv_input <- function(raw_text){
     str_trim(str_split(raw_text,",",simplify = TRUE))
@@ -106,8 +107,6 @@ server <- function(input, output) {
         tbl("samples") %>% 
         collect()
 
-#      browser()
-      
       genes_passing_count_filter <- raw_counts %>% 
         filter(gene %in% fg) %>% 
         collect() %>% 
@@ -145,18 +144,57 @@ server <- function(input, output) {
     tbg
   }
   
+  ht_obj = reactiveVal(NULL)
+  ht_pos_obj = reactiveVal(NULL)
+  
    output$genesPlot <- renderPlot({
      fd <- filtered_data()
      rs <- input$genetable_rows_selected
      if ( is.null(rs) || length(rs)==0){
-       plot_genes(fd,input) 
+       plot_list <- plot_genes(fd,input) 
      } else {
        genes_selected <- table_genes(fd)[rs,]$gene
-       fd %>% filter(gene %in% genes_selected) %>% plot_genes(input)
+       plot_list <- fd %>% filter(gene %in% genes_selected) %>% plot_genes(input)
      }
+     
+     if (plot_list$type == "heatmap"){
+       ht = draw(plot_list$plot)
+       ht_pos = htPositionsOnDevice(ht,calibrate = FALSE)
+       ht_obj(ht)
+       ht_pos_obj(ht_pos)
+     } else {
+       plot_list$plot
+     }
+     
    })
    
-   output$genetable <- renderDataTable(table_genes(filtered_data()))
+   proxy = dataTableProxy('genetable')
+   
+   observeEvent(input$heatmap_brush, {
+
+     lt = getPositionFromBrush(input$heatmap_brush)
+     selection = selectArea(ht_obj(), lt[[1]], lt[[2]], mark = FALSE, ht_pos = ht_pos_obj(),
+                            verbose = FALSE, calibrate = FALSE)
+     print(selection$row_index)
+     selectRows(proxy, selection$row_index[[1]])
+     
+   })
+   
+  observeEvent(input$reset_selection,{selectRows(proxy,NULL)})
+   
+   output$gene_selection_summary <- renderText({
+     fd <- filtered_data()
+     tg <- table_genes(fd)
+     rs <- input$genetable_rows_selected
+     if ( is.null(rs) || length(rs)==0){
+       paste0("Showing all ", nrow(tg), " matching genes")
+     } else {
+       paste0("Showing ", length(input$genetable_rows_selected), " of ", nrow(tg)," matching genes")
+    }
+   })
+   
+   
+   output$genetable <- renderDT(table_genes(filtered_data()))
 }
 
 

@@ -1,0 +1,1 @@
+nextflow run marine-omics/moqc -latest -profile genomics -r main --samples samples.csv --outdir out

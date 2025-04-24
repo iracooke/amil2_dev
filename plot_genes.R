@@ -15,7 +15,9 @@ plot_genes <- function(fd,input){
   
   
   p <- NULL
+  p_type <- "none"
   if ( num_genes < input$num_hm_genes ){
+    p_type <- "line_scatter"
     if ( input$use_average){
       p <- fd %>% group_by(gene,time_label,time) %>% 
         summarise(vst=mean(vst,na.rm = TRUE)) %>% 
@@ -80,6 +82,7 @@ plot_genes <- function(fd,input){
     }
     
   } else {
+    p_type <- "heatmap"
     if ( input$use_average){
       hmd <- fd %>% 
         select(gene,vst,time_code,cross,sample) %>% 
@@ -120,5 +123,5 @@ plot_genes <- function(fd,input){
                  col=rev(brewer.pal(n = 11, name = "RdBu"))
                  )
   }
-  p
+  list(plot = p, type = p_type)
 }
