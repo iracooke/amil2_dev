@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN R -e "install.packages(c('BiocManager','DT','dbplyr'), repos='https://cloud.r-project.org/')"
 
-RUN R -e "BiocManager::install(c('ComplexHeatmap','InteractiveComplexHeatmap'))"
+RUN R -e "BiocManager::install('ComplexHeatmap')"
+RUN R -e "BiocManager::install('InteractiveComplexHeatmap')"
 
 # copy the app to the image
 RUN mkdir /srv/shiny-server/amil2_dev
