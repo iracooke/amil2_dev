@@ -1,4 +1,5 @@
 library(shiny)
+library(bslib)
 
 ui <- fluidPage(
   tags$head(includeHTML(("google-analytics.html"))),
@@ -45,13 +46,27 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
 
     conditionalPanel(
       condition = ("(input.search_anno != 0) | (input.search_blast != 0)"),
-
-      h3("Options"),
-
-      numericInput("min_count", "Minimum read count for displayed genes", 10, min = 0, max = Inf),
-      numericInput("num_hm_genes", "Number of genes required to display heatmap", 10, min = 1, max = 100),
-      checkboxInput("use_average", "Average replicates ", TRUE),
-
+      h5("Match Summary"),
+      wellPanel(
+        layout_columns(
+          card(textOutput("match_summary"),
+          "You can narrow the selection by clicking individual rows in the table, or by dragging an area in the heatmap (if shown)"
+          ),
+          card(
+            downloadButton("downloadCounts", "Download Expression Matrix"),
+            downloadButton("downloadAnnotations", "Download Annotations"),            
+          ),col_widths = c(8,4),
+        )
+      )),
+      h5("Display Options"),
+      wellPanel(
+        page_fillable(
+          layout_columns(
+            numericInput("min_count", "Minimum read count for displayed genes", 10, min = 0, max = Inf),
+            numericInput("num_hm_genes", "Number of genes required to display heatmap", 10, min = 2, max = 100)
+          ),
+        checkboxInput("use_average", "Average replicates ", TRUE),
+      )),
       plotOutput("genesPlot",
                  height = "600px", 
                  brush = brushOpts(id = "heatmap_brush", 
@@ -59,16 +74,18 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
                                    delayType = "debounce", 
                                    delay = 600, resetOnNew = TRUE)),
       
-      h5(textOutput("gene_selection_summary")),
+      conditionalPanel(
+        condition = ("input.genetable_rows_selected.length > 0"),
+        h5(textOutput("gene_selection_summary")),
       
-      actionButton("reset_selection","Undo selections and show all matching genes"),
+        actionButton("reset_selection","Undo selections and show all matching genes")
+      ),
       
       DT::DTOutput('genetable')
       
     )
  )
 
-)
 
 source('myserver.R')
 

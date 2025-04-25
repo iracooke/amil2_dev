@@ -136,7 +136,6 @@ server <- function(input, output, session) {
     ann <- annotations() %>% 
       filter(gene %in% gene_ids)
     
-  #  browser()
     tbg <- annotations() %>% 
       filter(gene %in% gene_ids) %>% 
       select(gene,evalue,organism,protein_name=protein,
@@ -208,6 +207,10 @@ server <- function(input, output, session) {
     }
    })
    
+   output$match_summary <- renderText({
+     tg <- filtered_data() %>% table_genes()
+     paste0("Your search returned ",nrow(tg)," matching genes")
+   })
    
    output$genetable <- renderDT({
      filtered_data() %>% 
@@ -222,6 +225,34 @@ server <- function(input, output, session) {
          escape = FALSE) %>% 
        formatSignif(columns = "E-value",digits = 3)
      })
+   
+   output$downloadCounts <- downloadHandler(
+     filename = function() {
+       search_type <- ifelse( input$search_anno != 0,"annotations","blast" )
+       
+       searchsum <- input$gene_list_text
+       paste("amil2_dev_expr_",search_type,"_",Sys.Date(), ".csv", sep = "")
+     },
+     content = function(file) {
+       export_data <- filtered_data()
+       
+       write.csv(export_data, file, row.names = FALSE)
+     }
+   )
+   
+   output$downloadAnnotations <- downloadHandler(
+     filename = function() {
+       search_type <- ifelse( input$search_anno != 0,"annotations","blast" )
+       
+       searchsum <- input$gene_list_text
+       paste("amil2_dev_anno_",search_type,"_",Sys.Date(), ".csv", sep = "")
+     },
+     content = function(file) {
+       export_data <- filtered_data() %>% table_genes()
+       
+       write.csv(export_data, file, row.names = FALSE)
+     }
+   )
 }
 
 
