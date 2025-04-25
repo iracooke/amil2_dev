@@ -7,6 +7,7 @@ library(ComplexHeatmap)
 library(InteractiveComplexHeatmap)
 library(RColorBrewer)
 
+options(dplyr.summarise.inform = FALSE)
 
 source('blast.R')
 source('plot_genes.R')
@@ -19,6 +20,7 @@ onStop(function() {
 cat(file=stderr(),"Done opening db connection")
 
 server <- function(input, output, session) {
+  pdf(NULL)
   
   parse_csv_input <- function(raw_text){
     str_trim(str_split(raw_text,",",simplify = TRUE))
@@ -158,7 +160,7 @@ server <- function(input, output, session) {
      }
      
      if (plot_list$type == "heatmap"){
-       ht = draw(plot_list$plot)
+       ht = draw(plot_list$plot,heatmap_legend_side="bottom")
        ht_pos = htPositionsOnDevice(ht,calibrate = FALSE)
        ht_obj(ht)
        ht_pos_obj(ht_pos)
@@ -175,7 +177,6 @@ server <- function(input, output, session) {
      lt = getPositionFromBrush(input$heatmap_brush)
      selection = selectArea(ht_obj(), lt[[1]], lt[[2]], mark = FALSE, ht_pos = ht_pos_obj(),
                             verbose = FALSE, calibrate = FALSE)
-     print(selection$row_index)
      selectRows(proxy, selection$row_index[[1]])
      
    })
