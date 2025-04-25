@@ -21,4 +21,4 @@ COPY plot_genes.R /srv/shiny-server/amil2_dev/plot_genes.R
 COPY blast.R /srv/shiny-server/amil2_dev/blast.R
 COPY myserver.R /srv/shiny-server/amil2_dev/myserver.R
 COPY shiny.conf /etc/shiny-server/shiny-server.conf
-
+COPY google-analytics.html /srv/shiny-server/amil2_dev/
