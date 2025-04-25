@@ -134,16 +134,31 @@ server <- function(input, output, session) {
   
   table_genes <- function(fd){
     gene_ids <- fd$gene %>% base::unique()
+    ann <- annotations() %>% 
+      filter(gene %in% gene_ids)
     
+  #  browser()
     tbg <- annotations() %>% 
       filter(gene %in% gene_ids) %>% 
-      select(gene,protein_name=protein,
+      select(gene,evalue,organism,protein_name=protein,
              uniprot_id,
-             genename) %>% 
+             genename,Pfam=pfam_desc,GO=go_desc) %>% 
       distinct() %>% 
       as.data.frame()
     
     tbg
+  }
+  
+  
+  
+  process_for_datatable <- function(tg){
+    rendered <- tg %>% 
+      mutate(`RefSeq ID` = paste("<a href='https://www.ncbi.nlm.nih.gov/protein/",gene,"' target='_blank'>",gene,"</a>",sep = "")) %>% 
+      mutate(`Uniprot ID` = paste("<a href='https://www.uniprot.org/uniprotkb/",uniprot_id,"' target='_blank'>",uniprot_id,"</a>",sep = "")) %>% 
+      mutate(`E-value` = evalue)
+
+    rendered %>% 
+      select(`RefSeq ID`,`E-value`,`Uniprot ID`,Organism=organism,`Protein Name`=protein_name,`Gene name`=genename,Pfam)
   }
   
   ht_obj = reactiveVal(NULL)
@@ -195,7 +210,19 @@ server <- function(input, output, session) {
    })
    
    
-   output$genetable <- renderDT(table_genes(filtered_data()))
+   output$genetable <- renderDT({
+     filtered_data() %>% 
+       table_genes() %>% 
+       process_for_datatable() %>% 
+       datatable(
+         options = list(
+           pageLength = 20,
+           lengthMenu = c(10, 20, 50, 100)
+           
+         ),
+         escape = FALSE) %>% 
+       formatSignif(columns = "E-value",digits = 3)
+     })
 }
 
 

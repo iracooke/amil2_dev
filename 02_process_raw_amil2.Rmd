@@ -100,7 +100,18 @@ vst_counts <- vst(dds,blind=FALSE) %>%
 
 ```{r}
 annotations <- read_tsv("raw_data/amil2_annotations.tsv") %>% 
-  dplyr::select(gene=id,uniprot_id=Swissprot_acc,genename=`Gene Names`,go=`Gene Ontology IDs`,protein=`Protein names`,go_ipr=`ipr_go`,pfam_acc=Pfam_acc)
+  dplyr::select(gene=id,
+                evalue,
+                uniprot_id=Swissprot_acc,
+                genename=`Gene Names`,
+                go=`Gene Ontology IDs`,
+                go_desc=`Gene Ontology (GO)`,
+                protein=`Protein names`,
+                go_ipr=`ipr_go`,
+                pfam_acc=Pfam_acc,
+                pfam_desc=Pfam_desc,
+                signal_peptide,
+                organism=Organism)
 
 
 # Some annotation columns are actually lists. Parse these out and give each their own row.
