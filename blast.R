@@ -17,8 +17,8 @@ run_blast <- function(input,progress){
     blast_db <- "shiny_data/protein.fa"
     blast_cmd <- "blastp"
   } else {
-    blast_db <- "shiny_data/CDS.fa"
-    blast_cmd <- "blastn"
+    blast_db <- "shiny_data/protein.fa"
+    blast_cmd <- "blastx"
   }
   evalue <- input$evalue
   
@@ -52,7 +52,7 @@ run_blast <- function(input,progress){
   }
   
   blast_out <- system2(blast_cmd,args = blast_args, stdout = TRUE, wait = TRUE)
-  
+
   tidy_blast <- blast_out %>%
     as_tibble() %>% 
     separate(col = value, 
