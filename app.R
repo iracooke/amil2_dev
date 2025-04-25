@@ -57,7 +57,7 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
             downloadButton("downloadAnnotations", "Download Annotations"),            
           ),col_widths = c(8,4),
         )
-      )),
+      ),
       h5("Display Options"),
       wellPanel(
         page_fillable(
@@ -84,7 +84,8 @@ PLPLSSDITPEPSSSSAPLP", width = "100%",height=200, placeholder = "Enter a single 
       DT::DTOutput('genetable')
       
     )
- )
+  )
+)
 
 
 source('myserver.R')
