@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     ncbi-blast+
 
-RUN R -e "install.packages(c('BiocManager','DT','dbplyr'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('BiocManager','DT','dbplyr','bslib'), repos='https://cloud.r-project.org/')"
 
 RUN R -e "BiocManager::install('ComplexHeatmap')"
 RUN R -e "BiocManager::install('InteractiveComplexHeatmap')"

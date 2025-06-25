@@ -5,15 +5,18 @@ ui <- fluidPage(
   tags$head(includeHTML(("google-analytics.html"))),
   verticalLayout(
 
-    titlePanel("Acropora millepora Development RNASeq. Version 2"),
-
+    titlePanel(
+      title = HTML("<a href=\"https://github.com/iracooke/amil2_dev\">DEView</a>: DEVelopmental gene expression for <i>Acropora millepora</i>"), windowTitle = "DEView"
+      ),
+    
+    tags$br(),
     conditionalPanel(
       condition = ("(input.search_anno == 0) & (input.search_blast == 0)"),
-      h3("Search for Genes based on their functional annotations"),
       wellPanel(
+        h3("Search for Genes based on their functional annotations"),
         p("Define genes using the following criteria. Note that criteria are additive so adding more criteria will produce a longer gene list"),
 
-        textInput("gene_list_text", "Genes. A list of gene identifiers", value = "XP_029185411.2,XP_029192681.2", width = '100%', placeholder = "eg. XP_029192681.2,XP_029192681.2"),
+        textInput("gene_list_text", "Genes. A list of gene identifiers", value = NULL, width = '100%', placeholder = "eg. XP_029192681.2,XP_029192681.2"),
 
         textInput("domain_list_text", "Domains. A list of PFam domains", value = NULL, width = '100%', placeholder = "eg. PF00046"),
 
@@ -22,8 +25,9 @@ ui <- fluidPage(
         textInput("name_list_text", "Text to search in the protein name", value = NULL, width = '100%', placeholder = "eg. Peroxidasin"),
         actionButton("search_anno", "Find Genes")
       ),
-      h3("Or Search for homologs using blast"),
+      tags$br(),
       wellPanel(
+        h3("Or Search for homologs using blast"),
         numericInput("evalue","E Value",value = 10,min=0),
         numericInput("max_hits", "Maximum number of hits. Set to 0 for no limit", 100, min = 0, max = Inf),
         textAreaInput("text_sequences", "Paste sequences for searching. Sequence type (nucleotide or protein) will be automatically detected",
