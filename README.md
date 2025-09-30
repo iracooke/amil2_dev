@@ -77,3 +77,7 @@ We ran `moat` revision 255d880 which depends on the following software
 BLAST (blastp and blastx) searches were performed against the Swissprot database downloaded December 13 2022.  Blast searches were performed with `-max_target_seqs 5` and where multiple hits were obtained for the same query we chose the hit with the minimum evalue. If no hit had an evalue < 1 x 10-5 then no blast hit was recorded.
 
 
+**Database Preparation**
+
+After running nextflow pipelines further processing with R was performed to [supplement annotation via uniprot](01_annotation) and [normalise read counts and save sqlite tables](02_process_raw_amil2)
+
