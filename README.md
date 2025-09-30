@@ -79,5 +79,5 @@ BLAST (blastp and blastx) searches were performed against the Swissprot database
 
 **Database Preparation**
 
-After running nextflow pipelines further processing with R was performed to [supplement annotation via uniprot](01_annotation) and [normalise read counts and save sqlite tables](02_process_raw_amil2)
+After running nextflow pipelines further processing with R was performed to [supplement annotation via uniprot](01_annotation.md) and [normalise read counts and save sqlite tables](02_process_raw_amil2.md)
 
