@@ -1,4 +1,7 @@
-raw_data
+hpc
+*.tgz
+
+
 shiny_data
 
 # History files

@@ -1,34 +1,28 @@
-# Acropora millepora developmental transcriptome visualisation
+# Acropora millepora developmental transcriptome 
 
-## To update the deployed app
+This repository contains two related projects. 
 
-First login to the dockerserver
+1. R Shiny code for [amil-deview](https://amil-deview.mmb.group/) a web application for visualising gene expression changes during development of the coral *Acropora millepora*
+2. Scripts used to process raw sequencing data underlying this web application. 
 
-```bash
-ssh ubuntu@amil2dev.mmb.group
-```
+### Web App
 
-Update the code via git
+The web app includes standard shiny components for the UI and server backend. These are contained with `.R` files at the top level of this repository. 
 
-```bash
-cd dockerserver/apps/amil2_dev
-git pull
-```
-
-Update shiny data
+If you would like to run the web app locally you will need to download its database of gene expression values as well as fasta files used to facilitate blast searches. This can be done as follows;
 
 ```bash
-rsync -avur shiny_data/ ubuntu@amil2dev.mmb.group:~/dockerserver/apps/amil2_dev/shiny_data/
+
+
 ```
 
-Build and start docker containers
+### Data Processing
 
-```bash
-cd ~/dockerserver
+Three nextflow pipelines were used to perform the bulk of data processing.  
 
-sudo docker-compose build
-sudo docker-compose up
-# Once up you can cancel and then run start to have it run in daemon mode
-sudo docker-compose start
-```
+**MOQC**
 
+An initial assessment of raw data was performed with [moqc](https://github.com/marine-omics/moqc).  This pipeline performs calculates standard QC metrics on Illumina sequencing data using fastqc and multiqc.  It also performs taxonomic classification on a subset of reads using krakenuniq for the purposes of identifying commensal or symbiotic organisms that may be present within the host sample. 
+Full details of the databases used are provided within the moqc repository.  For the purposes of this analysis it is important to note that the databases include representative genomes for all major Symbiodiniaceae genera as well as representative coral genomes including *Acropora*.
+
+moqc

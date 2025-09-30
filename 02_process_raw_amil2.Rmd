@@ -13,6 +13,8 @@ library(stringi)
 library(tximport)
 ```
 
+First we read the metadata associated with the experiment and tidy up the sample names
+
 ```{r}
 stage_to_hpf <- function(s){
   if ( s=="Egg"){ return(0)}
@@ -27,7 +29,7 @@ stage_to_hpf <- function(s){
   }
 }
 
-sample_table <- readxl::read_xlsx("raw_data/SAMPLES_developmental_transcriptome_AMIL.xlsx",range = "A2:H150") %>% 
+sample_table <- readxl::read_xlsx("hpc/SAMPLES_developmental_transcriptome_AMIL.xlsx",range = "A2:H150") %>% 
   mutate(Mother = ifelse(grepl("R",Replicates),"B","A")) %>% # adds column with cross (Mother) info G = A and R = B
   mutate(Stage = str_match(`Sample identification`,"([t]?[0-9]+[hpf]*)")[,2]) %>% 
   mutate(Stage = ifelse(is.na(Stage),"Egg",Stage)) %>% 
@@ -48,12 +50,13 @@ sample_table <- readxl::read_xlsx("raw_data/SAMPLES_developmental_transcriptome_
   select(-RIN,-Tank)
 ```
 
+We then used tximport to read isoform level expression values calculated by RSEM and then aggregate these to gene-level counts.  This count matrix was then used as input for DESeq2 where the `vst` function was used to calculate variance-stabilised and normalised expression values for visualisation purposes.
 
 ```{r}
 if ( file.exists("cache/amil2_txi.rds")){
   txi.rsem <- read_rds("cache/amil2_txi.rds")
 } else {
-  ts_results_files <- list.files("raw_data/morp/out_d/rsem/","*.isoforms.results",full.names = TRUE)
+  ts_results_files <- list.files("hpc/morp/out_d/rsem/","*.isoforms.results",full.names = TRUE)
 
   sample_names <- basename(ts_results_files) %>% str_extract("([^\\.])*")
 
@@ -97,9 +100,10 @@ vst_counts <- vst(dds,blind=FALSE) %>%
   tidyr::extract(id,into = "gene",regex = "cds_(.*)_[0-9]+$")
 ```
 
+Gene annotations obtained via the `01_annotation` script were then read and used to create a series of tables to facilitate fast lookup of GO and PFam accessions.  These were then saved to sqlite format for use with the DEview application.
 
 ```{r}
-annotations <- read_tsv("raw_data/amil2_annotations.tsv") %>% 
+annotations <- read_tsv("hpc/amil2_annotations.tsv") %>% 
   dplyr::select(gene=id,
                 evalue,
                 uniprot_id=Swissprot_acc,
