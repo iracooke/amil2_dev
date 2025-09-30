@@ -1,5 +1,7 @@
 # Acropora millepora developmental transcriptome 
 
+[![DOI](https://zenodo.org/badge/741772001.svg)](https://doi.org/10.5281/zenodo.17230817)
+
 This repository contains two related projects. 
 
 1. R Shiny code for [amil-deview](https://amil-deview.mmb.group/) a web application for visualising gene expression changes during development of the coral *Acropora millepora*
